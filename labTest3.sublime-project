@@ -1,0 +1,20 @@
+{
+	"folders":
+	[
+		{
+			"path": "hooks"
+		},
+		{
+			"path": "platforms"
+		},
+		{
+			"path": "plugins"
+		},
+		{
+			"path": "scss"
+		},
+		{
+			"path": "www"
+		}
+	]
+}
