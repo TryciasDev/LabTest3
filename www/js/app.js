@@ -53,6 +53,57 @@ angular.module('starter', ['ionic',"chart.js"])
     },
   ]; 
 
+/*Data pour le graph en forme de bar*/
+  $scope.bar = {};
+  $scope.bar.points = [" ",];
+  $scope.bar.noms = ["Objectif"];
+//  $scope.bar.noms = ["Objectif","Patricia","Sophie","Tiphaine",];
+  angular.forEach($scope.tasks,function(valeur,cle){
+    this.push(valeur.title);
+  }, $scope.bar.noms);
+  $scope.bar.poids = [[10]];
+  angular.forEach($scope.tasks,function(valeur,cle){
+    
+    var dernierPoids = 0;
+    if(valeur.journal.length>1){
+      dernierPoids = valeur.journal[valeur.journal.length-1].poids;
+    }
+
+/*    angular.forEach(valeur.journal, function(val, key){
+     this = val.poids;
+    }, dernierPoids);*/
+    this.push([dernierPoids]);
+  }, $scope.bar.poids);
+
+
+/*Data pour le graph en forme de ligne*/
+  $scope.graph = {};
+  $scope.graph.points = ["2016-02-15", "2016-02-24","2016-03-02","2016-03-09","2016-03-23"];
+  $scope.graph.noms = [];
+  angular.forEach($scope.tasks,function(valeur,cle){
+    this.push(valeur.title);
+  }, $scope.graph.noms);
+    /*$scope.graph.poids = [
+    //Patricia
+    [87.7,87.3,87.6,89.7,86],
+    //Sophie
+    [86,86.7,85.5,85.5,86.6],
+    //Tiphaine
+    [84,80.7,82.5,84.5,87],
+  ];*/
+
+  $scope.graph.poids = [];
+  angular.forEach($scope.tasks,function(valeur,cle){
+    if(valeur.journal.length>1){
+    var tousLesPoids = [];
+    angular.forEach(valeur.journal,function(val,Key){
+      this.push(val.poids);
+
+    }, tousLesPoids);
+    this.push(tousLesPoids);
+    }
+  }, $scope.graph.poids);
+
   $scope.togglePoids = function(task) {
     if ($scope.isPoidsShown(task)) {
       $scope.shownPoids = null;
@@ -82,33 +133,6 @@ $ionicModal.fromTemplateUrl('templates/modal.html', {
     $ionicListDelegate.closeOptionButtons();
   };
  
-/*Data pour le graph en forme de bar*/
-  $scope.bar = {};
-  $scope.bar.points = ["eval",];
-  $scope.bar.noms = ["Objectif","Patricia","Sophie","Tiphaine",];
-  $scope.bar.poids = [
-    [10],
-    //Patricia
-    [5],
-    //Sophie
-    [-2],
-    //Tiphaine
-    [3],
-  ];
-
-
-/*Data pour le graph en forme de ligne*/
-  $scope.graph = {};
-  $scope.graph.points = ["2016-02-15", "2016-02-24","2016-03-02","2016-03-09","2016-03-23"];
-  $scope.graph.noms = ["Patricia","Sophie","Tiphaine",];
-  $scope.graph.poids = [
-    //Patricia
-    [87.7,87.3,87.6,89.7,86],
-    //Sophie
-    [86,86.7,85.5,85.5,86.6],
-    //Tiphaine
-    [84,80.7,82.5,84.5,87],
-  ];
 
   $scope.newTask = function() {
     $ionicPopup.prompt({
