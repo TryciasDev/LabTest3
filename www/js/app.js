@@ -20,15 +20,15 @@ angular.module('starter', ['ionic',"chart.js"])
   }])
 .controller('TodoCtrl',function($scope,$ionicPopup, $ionicListDelegate,$ionicModal) {
   $scope.tasks = [
-    {title: "Gwen", objectif:10, origine:0, open:false,
+    {title: "Gwen", objectif:10, origine:0, open:false, couleur:"#FF0000",
       journal: []
     },
-    {title: "Kristell", objectif:10, origine:94,  open:false,
+    {title: "Kristell", objectif:10, origine:94,  open:false,couleur:"#FF0000",
       journal: [
         {date :"2016-03-18", poids:94},
       ]
     },
-    {title: "Patricia", objectif:10, origine:90.9,  open:false,
+    {title: "Patricia", objectif:10, origine:90.9,  open:false,couleur:"#FF0000",
       journal: [
         {date :"2015-10-23", poids:90.9},
         {date :"2015-10-28", poids:90.2},
@@ -37,18 +37,18 @@ angular.module('starter', ['ionic',"chart.js"])
         {date :"2016-03-16", poids:86},
       ]
     },
-    {title: "Sophie", objectif:7, origine:85,  open:false,
+    {title: "Sophie", objectif:7, origine:85,  open:false,couleur:"#FF0000",
       journal: [
         {date :"2016-02-15", poids:85},
         {date :"2016-02-18", poids:86},
         {date :"2016-03-02", poids:86.7},
       ]
     },
-    {title: "Tiphaine", objectif:10, origine:84,  open:false,
+    {title: "Tiphaine", objectif:10, origine:84,  open:false,couleur:"#FF0000",
       journal: [
         {date :"2016-02-15", poids:85},
         {date :"2016-02-18", poids:86},
-        {date :"2016-03-02", poids:86.7},
+        {date :"2016-03-02", poids:81},
       ]
     },
   ]; 
@@ -57,53 +57,71 @@ angular.module('starter', ['ionic',"chart.js"])
   $scope.bar = {};
   $scope.bar.points = [" ",];
   $scope.bar.noms = ["Objectif"];
-//  $scope.bar.noms = ["Objectif","Patricia","Sophie","Tiphaine",];
+  Chart.defaults.global.colours = ["#FFFFFF"];
   angular.forEach($scope.tasks,function(valeur,cle){
+    if(valeur.journal.length>1){
     this.push(valeur.title);
+    Chart.defaults.global.colours.push(valeur.couleur);
+    }
   }, $scope.bar.noms);
+
   $scope.bar.poids = [[10]];
   angular.forEach($scope.tasks,function(valeur,cle){
     
     var dernierPoids = 0;
     if(valeur.journal.length>1){
       dernierPoids = valeur.journal[valeur.journal.length-1].poids;
+      var diff = valeur.origine - dernierPoids;
+      this.push([diff]);
     }
-
-/*    angular.forEach(valeur.journal, function(val, key){
-     this = val.poids;
-    }, dernierPoids);*/
-    this.push([dernierPoids]);
   }, $scope.bar.poids);
 
 
 /*Data pour le graph en forme de ligne*/
   $scope.graph = {};
-  $scope.graph.points = ["2016-02-15", "2016-02-24","2016-03-02","2016-03-09","2016-03-23"];
+  $scope.graph.points = [];
+  angular.forEach($scope.tasks,function(valeur,cle){
+    if(valeur.journal.length>1){
+      angular.forEach(valeur.journal, function(val,key){
+        if(this.indexOf(val.date) == -1) {
+          this.push(val.date);
+        }
+      }, this);
+    }
+  }, $scope.graph.points);  
   $scope.graph.noms = [];
   angular.forEach($scope.tasks,function(valeur,cle){
-    this.push(valeur.title);
+    if(valeur.journal.length>0){
+      this.push(valeur.title);
+    }
   }, $scope.graph.noms);
-    /*$scope.graph.poids = [
-    //Patricia
-    [87.7,87.3,87.6,89.7,86],
-    //Sophie
-    [86,86.7,85.5,85.5,86.6],
-    //Tiphaine
-    [84,80.7,82.5,84.5,87],
-  ];*/
+
 
   $scope.graph.poids = [];
   angular.forEach($scope.tasks,function(valeur,cle){
     if(valeur.journal.length>1){
     var tousLesPoids = [];
-    angular.forEach(valeur.journal,function(val,Key){
-      this.push(val.poids);
-
-    }, tousLesPoids);
+    angular.forEach($scope.graph.points,function(pVal, vCle){
+      var i=0, len=valeur.journal.length;
+      var dPoids = "";
+      var isFound = false;
+      for (; i<len; i++) {
+        dPoids = valeur.journal[i].poids;
+        if (valeur.journal[i].date == pVal) {
+         this.push(valeur.journal[i].poids);
+         isFound=true;
+         break;
+        }
+      }
+      if(!isFound){
+        this.push(dPoids);
+      }
+    },tousLesPoids);
     this.push(tousLesPoids);
     }
   }, $scope.graph.poids);
 
+/*affichage du details de ld'une personne */
   $scope.togglePoids = function(task) {
     if ($scope.isPoidsShown(task)) {
       $scope.shownPoids = null;
@@ -119,7 +137,7 @@ angular.module('starter', ['ionic',"chart.js"])
   $scope.onClick = function (points, evt) {
     console.log(points, evt);
   };
-
+/*affichage fenêtre modal pour entrer un nouveau poids et sa date*/
 $ionicModal.fromTemplateUrl('templates/modal.html', {
     scope: $scope
   }).then(function(modal) {
@@ -127,13 +145,13 @@ $ionicModal.fromTemplateUrl('templates/modal.html', {
   });
 
   $scope.ajoutePoids = function(u) {        
-    $scope.graph.point.push(u.poids);
+    //$scope.graph.point.push(u.poids);
    // $scope.graph.poids[0].push({u.poids });
     $scope.modal.hide();
     $ionicListDelegate.closeOptionButtons();
   };
  
-
+/*pour ajouter un individu*/
   $scope.newTask = function() {
     $ionicPopup.prompt({
       title: "New Task",
@@ -147,12 +165,7 @@ $ionicModal.fromTemplateUrl('templates/modal.html', {
     })
   };
 
- $scope.showSublist = function(idx) {
-           $scope.tasks[idx].open = !$scope.tasks[idx].open;    
-  };
-  
-
-
+/*pour changer un nom*/
   $scope.edit = function(idx) {
     var nom = $scope.tasks[idx].title;
     $scope.data = {response: nom};

@@ -36,16 +36,14 @@
  
 
       <ion-content>
+        Evolution dans le temps
         <canvas id="line" class="chart chart-line" chart-data="graph.poids" chart-labels="graph.points" chart-legend="true" chart-series="graph.noms" chart-click="onClick"></canvas> 
-
-           
-
-          <canvas id="barre" class="chart chart-bar" chart-data="bar.poids" chart-labels="bar.points" chart-legend="true" chart-series="bar.noms" chart-click="onClick"></canvas> 
+          Global championship
+          <canvas id="barre" class="chart chart-bar" chart-data="bar.poids" chart-colours="bar.couleurs" chart-labels="bar.points" chart-legend="true" chart-series="bar.noms" chart-click="onClick"></canvas> 
 
           
         <ion-list>
           <div ng-repeat="task in tasks">
-          <!-- ng-click="showSublist($index)"-->
             <ion-item class="item-icon-right" ng-click="togglePoids(task)">
               <i class="icon" ng-class="isPoidsShown(task) ? &apos;ion-ios-arrow-up&apos; : &apos;ion-ios-arrow-down&apos;"></i>
               <ion-option-button class="button-energized" ng-click="edit($index)">
